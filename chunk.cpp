@@ -7,6 +7,8 @@ using namespace std;
 
 #include "chunk.hpp"
 
-Chunk::Chunk(jack_default_aduio_sample_t *data) {
-  
+Chunk::Chunk(int frames, jack_default_audio_sample_t *data, Chunk *next) {
+  m_frames = frames;
+  m_data = data;
+  m_next = next;
 }
