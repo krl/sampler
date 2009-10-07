@@ -1,15 +1,28 @@
+#ifndef _Sound
+#define _Sound
+
 using namespace std;
 
 #include <string>
-
+#include "def.hpp"
 #include "chunk.hpp"
-#define MAX_CHANNELS 2
 
 class Sound {
 public:
   Sound(char *path);
+  ~Sound();
+
+  // the size of continuous sample data in memory at offset x
+  int     get_channels();
+  int     chunk_left(int offset);
+  sample* get_data();
+
 
 private:
-  int channels;
-  Chunk *chunk[MAX_CHANNELS];
+  Chunk *m_chunk;
+
+  int m_channels;
+  int m_frames;
 };
+
+#endif

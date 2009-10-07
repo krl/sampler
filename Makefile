@@ -1,10 +1,9 @@
 SOURCES=$(shell ls *.cpp)
 OBJECTS=${SOURCES:.cpp=.o}
-#HEADER=$(shell ls *.hpp)
+HEADER=$(shell ls *.hpp)
 EXECUTABLE=sampler
-# CFLAGS=-Wuninitialized -O -g
 CFLAGS=-W -Iinclude
-LIBS=-ljack -lsndfile
+LIBS=-ljack -lsndfile -lrubberband -loscpack
 LFLAGS=$(LIBS) -W
 
 all: $(EXECUTABLE)
