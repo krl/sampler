@@ -1,8 +1,5 @@
 using namespace std;
 
-#include <iostream>
-#include <math.h>
-
 #include "voice.hpp"
 
 Voice::Voice(int channels, int buffer_size, int samplerate) {
@@ -12,15 +9,15 @@ Voice::Voice(int channels, int buffer_size, int samplerate) {
   m_offset = 0;
   m_status = VOICE_IDLE;
 
-  // m_rubber = new RubberBand::RubberBandStretcher(m_samplerate,
-  // 						 m_channels,
-  // 						 RubberBand::RubberBandStretcher::OptionProcessRealTime);
+  m_rubber = new RubberBand::RubberBandStretcher(m_samplerate,
+  						 m_channels,
+  						 RubberBand::RubberBandStretcher::OptionProcessRealTime);
 
-  //cout << "voice init, buffer size: " << m_buffer_size << endl;
+  // cout << "voice init, buffer size: " << m_buffer_size << endl;
 }
 
 Voice::~Voice() {
-  //delete m_buffer;
+  delete m_rubber;
 }
 
 int Voice::play(Sound *sound) {
@@ -41,11 +38,18 @@ VoiceStatus Voice::get_status() {
 
 bool Voice::write(sample** buffers) {
   int data_left = m_sound->chunk_left(m_offset);
-  sample *data = m_sound->get_data();
+  sample* data[1];
+  data[0] = m_sound->get_data();
 
-  for (int c = 0 ; c < 2; c++)
-    for (int f = 0 ; (f < data_left && f < m_buffer_size); f++)
-      buffers[c][f] += data[m_offset + f];
+  // for (int c = 0 ; c < 2; c++)
+  //   for (int f = 0 ; (f < data_left && f < m_buffer_size); f++)
+  //     buffers[c][f] += data[m_offset + f];
+
+  int required = m_rubber->getSamplesRequired();  
+
+  //cout << ((const float* const*)data)[100] <<endl;
+
+  m_rubber->process(((float* const*)data), 1, false);
 
   m_offset += m_buffer_size;
   if (m_offset >= data_left) {

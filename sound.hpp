@@ -17,7 +17,6 @@ public:
   int     chunk_left(int offset);
   sample* get_data();
 
-
 private:
   Chunk *m_chunk;
 

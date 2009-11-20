@@ -15,7 +15,7 @@ using namespace std;
 
 int test = 0;
 
-bool killed = false;
+bool once = true;
 
 jack_port_t *port_control;
 jack_port_t *port_play;
@@ -27,6 +27,7 @@ jack_client_t *client;
 //Voice *test_voice_mono;
 
 VoicePool *voicepool;
+Scheduler *scheduler;
 
 Sound *test_sound;
 int wat = 0;
@@ -34,6 +35,11 @@ int wat = 0;
 static int process(jack_nframes_t nframes, void *arg) {
   int i;
   sample *out[2];
+
+  if (once) {
+    scheduler->set_time_offset();
+    once = false;
+  }
 
   for (int i = 0 ; i < OUTPUT_PORTS ; i++ )
     out[i] = (jack_default_audio_sample_t *) jack_port_get_buffer (port_output[i], nframes);
@@ -43,9 +49,12 @@ static int process(jack_nframes_t nframes, void *arg) {
       out[c][f] = 0.0;
   }
 
-  // if (test++ % 100 == 0) {
-  //   voicepool->play(test_sound);
-  // }
+  if (test % 100 == 0 && 
+      test % 400 != 0 ||
+      test % 350 == 0) {
+    voicepool->play(test_sound);
+  }
+  test++;
 
   voicepool->write(out);
 
@@ -65,9 +74,8 @@ int main(int narg, char **args)
 
   // setup test sound and voice
   test_sound = new Sound(args[1]);
-  voicepool  = new VoicePool(100,
-			     (int)jack_get_buffer_size(client),
-			     (int)jack_get_sample_rate(client));
+  voicepool  = new VoicePool(100,(int)jack_get_buffer_size(client),(int)jack_get_sample_rate(client));
+  scheduler  = new Scheduler();
 
   // setup jack connections
   jack_set_process_callback (client, process, 0);
@@ -99,15 +107,11 @@ int main(int narg, char **args)
   }
 
   // osc listener
+  scheduler->run();
 
-  Scheduler scheduler;
-  UdpListeningReceiveSocket s(IpEndpointName(IpEndpointName::ANY_ADDRESS, 7000), &scheduler);
-
-  s.RunUntilSigInt();
-
-  delete test_sound;
+  delete scheduler;
   delete voicepool;
-  //delete test_voice_mono;
+  delete test_sound;
 
   jack_client_close(client);
   exit (0);

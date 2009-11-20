@@ -1,4 +1,7 @@
 #include <jack/jack.h>
+#include <iostream>
+#include <math.h>
+#include <rubberband/RubberBandStretcher.h>
 
 #include "def.hpp"
 #include "sound.hpp"
@@ -26,7 +29,7 @@ private:
   int m_offset;
   VoiceStatus m_status;
 
-  //RubberBand::RubberBandStretcher *m_rubber;
+  RubberBand::RubberBandStretcher *m_rubber;
 
   // here be envelopes etc, etc, etc...
 };

@@ -3,7 +3,7 @@ OBJECTS=${SOURCES:.cpp=.o}
 HEADER=$(shell ls *.hpp)
 EXECUTABLE=sampler
 CFLAGS=-W -Iinclude
-LIBS=-ljack -lsndfile -lrubberband -loscpack
+LIBS=-ljack -lsndfile -loscpack -lrubberband
 LFLAGS=$(LIBS) -W
 
 all: $(EXECUTABLE)
