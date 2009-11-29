@@ -4,21 +4,24 @@
 using namespace std;
 
 #include <string>
+#include <jack/jack.h>
 #include "def.hpp"
-#include "chunk.hpp"
+#include "chunkpool.hpp"
+
+#include <iostream>
+#include <sndfile.h>
 
 class Sound {
 public:
-  Sound(char *path);
+  Sound(char *path, ChunkPool *chunkpool);
   ~Sound();
 
-  // the size of continuous sample data in memory at offset x
   int     get_channels();
-  int     chunk_left(int offset);
-  sample* get_data();
+  sample* m_chunks[MAX_CHUNKS];
+
 
 private:
-  Chunk *m_chunk;
+  ChunkPool *m_chunkpool;
 
   int m_channels;
   int m_frames;

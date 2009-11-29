@@ -1,6 +1,6 @@
 #include "voicepool.hpp"
 
-bool VoicePool::play(Sound *sound) {
+bool VoicePool::play(Sound *sound, jack_nframes_t when) {
   int start = m_next;
   Voice *voice;
 
@@ -16,19 +16,19 @@ bool VoicePool::play(Sound *sound) {
     }
   } while (voice->get_status() != VOICE_IDLE);
 
-  voice->play(sound);
+  voice->play(sound, when);
   return true;
 }
 
-bool VoicePool::write(sample** buffers) {
+bool VoicePool::write(sample** buffers, jack_nframes_t frame_time) {
   for(int i = 0; i < m_number; i++) {
-      switch (m_voices[i]->get_status()) {
-      case VOICE_PLAYING:
-      case VOICE_LOOPING:
-	m_voices[i]->write(buffers);
+    switch (m_voices[i]->get_status()) {
+    case VOICE_PLAYING:
+    case VOICE_LOOPING:
+      m_voices[i]->write(buffers);
       break;
-      }
-    }	 
+    }
+  }	 
 }
 
 VoicePool::VoicePool(int number, int buffer_size, int samplerate) {

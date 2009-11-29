@@ -1,12 +1,18 @@
+#ifndef _Voice
+#define _Voice
+
 #include <jack/jack.h>
 #include <iostream>
 #include <math.h>
-#include <rubberband/RubberBandStretcher.h>
+//#include <rubberband/RubberBandStretcher.h>
+#include <oscpack/osc/OscTypes.h>
 
 #include "def.hpp"
 #include "sound.hpp"
 
-enum VoiceStatus { VOICE_IDLE, VOICE_PLAYING, VOICE_LOOPING };
+using namespace osc;
+
+enum VoiceStatus {VOICE_IDLE, VOICE_PLAYING, VOICE_LOOPING};
 
 class Voice {
 public:
@@ -14,14 +20,16 @@ public:
   ~Voice();
 
   // control
-  int play(Sound *sound);
+  int play(Sound *sound, jack_nframes_t when);
   int reset();
   int advance();
-  bool write(sample** buffers);
+  bool write(sample** buffers, jack_nframes_t frame_time);
   VoiceStatus get_status();
 
 private:
   Sound *m_sound;
+
+  uint64 start_timestamp;
 
   int m_samplerate;
   int m_buffer_size;
@@ -29,7 +37,9 @@ private:
   int m_offset;
   VoiceStatus m_status;
 
-  RubberBand::RubberBandStretcher *m_rubber;
+  // RubberBand::RubberBandStretcher *m_rubber;
 
-  // here be envelopes etc, etc, etc...
+  // here be envelopes etc...
 };
+
+#endif

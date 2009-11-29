@@ -1,3 +1,6 @@
+#ifndef _VoicePool
+#define _VoicePool
+
 #include <iostream>
 #include "voice.hpp"
 #include "sound.hpp"
@@ -8,8 +11,8 @@ public:
   ~VoicePool();
 
   // control
-  bool play(Sound *sound);
-  bool write(sample** buffers);
+  bool play(Sound *sound, jack_nframes_t when);
+  bool write(sample** buffers, jack_nframes_t frame_time);
 
 private:
   int m_number;
@@ -17,3 +20,5 @@ private:
   Voice* m_voices[MAX_VOICES];
 
 };
+
+#endif

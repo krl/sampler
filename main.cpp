@@ -11,6 +11,7 @@ using namespace std;
 
 #include "sound.hpp"
 #include "voicepool.hpp"
+#include "chunkpool.hpp"
 #include "scheduler.hpp"
 
 int test = 0;
@@ -28,16 +29,21 @@ jack_client_t *client;
 
 VoicePool *voicepool;
 Scheduler *scheduler;
+SoundBank *soundbank;
+ChunkPool *chunkpool;
 
-Sound *test_sound;
 int wat = 0;
 
 static int process(jack_nframes_t nframes, void *arg) {
   int i;
   sample *out[2];
 
+  jack_nframes_t frame_start;
+
+  frame_start = jack_last_frame_time(client);
+
   if (once) {
-    scheduler->set_time_offset();
+    scheduler->set_time_offset(frame_start);
     once = false;
   }
 
@@ -45,18 +51,11 @@ static int process(jack_nframes_t nframes, void *arg) {
     out[i] = (jack_default_audio_sample_t *) jack_port_get_buffer (port_output[i], nframes);
 
   for (int c = 0 ; c < OUTPUT_PORTS ; c++ )
-    for (int f = 0 ; f < nframes ; f++) {
+    for (jack_nframes_t f = 0 ; f < nframes ; f++) {
       out[c][f] = 0.0;
   }
 
-  if (test % 100 == 0 && 
-      test % 400 != 0 ||
-      test % 350 == 0) {
-    voicepool->play(test_sound);
-  }
-  test++;
-
-  voicepool->write(out);
+  voicepool->write(out, frame_start);
 
   return 0;
 }
@@ -65,17 +64,19 @@ static void jack_shutdown(void *arg) {
   exit(1);
 }
 
-int main(int narg, char **args)
-{
+int main(int narg, char **args) {
   if ((client = jack_client_open("sampler", JackNullOption, NULL)) == 0) {
     fprintf(stderr, "jack server not running?\n");
     return 1;
   }
 
   // setup test sound and voice
-  test_sound = new Sound(args[1]);
-  voicepool  = new VoicePool(100,(int)jack_get_buffer_size(client),(int)jack_get_sample_rate(client));
-  scheduler  = new Scheduler();
+  // test_sound = new Sound(args[1]);
+  voicepool = new VoicePool(100,(int)jack_get_buffer_size(client),(int)jack_get_sample_rate(client));
+
+  chunkpool = new ChunkPool();
+  soundbank = new SoundBank(chunkpool);
+  scheduler = new Scheduler(soundbank, voicepool, jack_get_sample_rate(client));
 
   // setup jack connections
   jack_set_process_callback (client, process, 0);
@@ -109,9 +110,9 @@ int main(int narg, char **args)
   // osc listener
   scheduler->run();
 
-  delete scheduler;
   delete voicepool;
-  delete test_sound;
+  delete scheduler;
+  delete soundbank;
 
   jack_client_close(client);
   exit (0);
