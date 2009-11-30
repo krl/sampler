@@ -49,5 +49,6 @@ ChunkPool::get_chunk() {
   } while (chunk == NULL);
   
   m_chunks[index] = NULL; // free up this slot
+  cout << "assigned chunk " << index << endl;
   return chunk;
 }

@@ -19,6 +19,8 @@ public:
   int     get_channels();
   sample* m_chunks[MAX_CHUNKS];
 
+  sample frame(int channel, int index);
+  int get_frames();
 
 private:
   ChunkPool *m_chunkpool;

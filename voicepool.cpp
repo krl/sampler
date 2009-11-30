@@ -25,7 +25,7 @@ bool VoicePool::write(sample** buffers, jack_nframes_t frame_time) {
     switch (m_voices[i]->get_status()) {
     case VOICE_PLAYING:
     case VOICE_LOOPING:
-      m_voices[i]->write(buffers);
+      m_voices[i]->write(buffers, frame_time);
       break;
     }
   }	 

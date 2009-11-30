@@ -72,7 +72,7 @@ int main(int narg, char **args) {
 
   // setup test sound and voice
   // test_sound = new Sound(args[1]);
-  voicepool = new VoicePool(100,(int)jack_get_buffer_size(client),(int)jack_get_sample_rate(client));
+  voicepool = new VoicePool(1024,(int)jack_get_buffer_size(client),(int)jack_get_sample_rate(client));
 
   chunkpool = new ChunkPool();
   soundbank = new SoundBank(chunkpool);

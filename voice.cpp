@@ -39,8 +39,22 @@ VoiceStatus Voice::get_status() {
 
 bool Voice::write(sample** buffers, jack_nframes_t frame_time) {
 
-  sample* data[1];
-  // data[0] = m_sound->get_data();
+  int offset = frame_time + m_buffer_size - m_when;
+
+  // cout << "voice::write offset " << offset << endl;
+
+  if (offset >= 0) {
+    if (offset > m_buffer_size) offset = 0;
+    // starts in this cycle    
+    for (int c = 0 ; c < 2; c++) { // output channels
+      for (int f = offset; f < m_buffer_size; f++) {
+	buffers[c][f] += m_sound->frame(c, m_offset + (f - offset));
+      }
+    }
+    m_offset += m_buffer_size - offset;
+    if (m_offset > m_sound->get_frames())
+      m_status = VOICE_IDLE;
+  }
 
   // for (int c = 0 ; c < 2; c++)
   //   for (int f = 0 ; (f < data_left && f < m_buffer_size); f++)

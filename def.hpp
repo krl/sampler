@@ -7,7 +7,7 @@
 
 #define OSC_PORT 7000
 
-#define CHUNK_SIZE 11025     // quarter second in 44.1
+#define CHUNK_SIZE 11025     // quarter second in 44.5
 #define MAX_CHUNKS 1024 * 64 // 4.5 channel-hours total
 
 #define CHUNK_POOL_SIZE 128

@@ -22,8 +22,9 @@ public:
   Sound* get(char* path);
 
 private:
+
   ChunkPool *m_chunkpool;
-  unordered_map<const char*, Sound*, hash<const char*>, eqstr> m_sounds;
+  unordered_map<string, Sound*> m_sounds;
 };
 
 #endif

@@ -6,10 +6,10 @@ SoundBank::SoundBank(ChunkPool *chunkpool) {
 
 bool 
 SoundBank::load(char* path) {
-  Sound* tmp;
-  tmp = new Sound(path, m_chunkpool);
-  m_sounds[path] = tmp;
-  //delete tmp;
+  if (m_sounds[path] == NULL) {
+    m_sounds[path] = new Sound(path, m_chunkpool);
+    cout << "loaded " << path << " at " << m_sounds[path] << endl;
+  }
 }
 
 SoundBank::~SoundBank() {
@@ -19,5 +19,6 @@ SoundBank::~SoundBank() {
 
 Sound*
 SoundBank::get(char* path) {
+  cout << "requesting " << path << " at " << m_sounds[path] << endl;
   return m_sounds[path];
 }

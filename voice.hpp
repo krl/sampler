@@ -18,7 +18,7 @@ class Voice {
 public:
   Voice(int channels, int buffer_size, int samplerate);
   ~Voice();
-
+  
   // control
   int play(Sound *sound, jack_nframes_t when);
   int reset();
@@ -35,6 +35,7 @@ private:
   int m_buffer_size;
   int m_channels;
   int m_offset;
+  jack_nframes_t m_when;
   VoiceStatus m_status;
 
   // RubberBand::RubberBandStretcher *m_rubber;

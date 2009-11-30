@@ -26,7 +26,7 @@ Sound::Sound(char *path, ChunkPool *chunkpool) {
 
   sample_buffer = new sample[CHUNK_SIZE * m_channels];
 
-  int framechunks = (m_frames / CHUNK_SIZE) + (m_frames % CHUNK_SIZE) != 0 ? 1 : 0;
+  int framechunks = (m_frames / CHUNK_SIZE) + 1;
   
   for (int i = 0 ; i < framechunks ; i++) {
     int read = sf_read_float(file, sample_buffer, CHUNK_SIZE);
@@ -39,15 +39,26 @@ Sound::Sound(char *path, ChunkPool *chunkpool) {
     }
   }	
 
-  cout << "file loaded: " << path       << endl
-       << "frames: "      << m_frames   << endl
-       << "channels: "    << m_channels << endl;
+  cout << "file loaded: " << path        << endl
+       << "frames: "      << m_frames    << endl
+       << "channels: "    << m_channels  << endl
+       << "framechunks: " << framechunks << endl;
 }
 
-// sample* Sound::get_data() {
-//   // return m_chunk->get_data();
-// }
+sample Sound::frame(int channel, int index) {
+
+  // cout << "m_frames " << m_frames << "\tindex " << index << endl
+  //      << "index/chunkz " << index / CHUNK_SIZE << "\tindex%cz " << index % CHUNK_SIZE << endl;
+  if (index < m_frames)
+    return m_chunks[index / CHUNK_SIZE][index % CHUNK_SIZE];
+  else
+    return (sample)0;
+}
 
 int Sound::get_channels() {
   return m_channels;
+}
+
+int Sound::get_frames() {
+  return m_frames;
 }
